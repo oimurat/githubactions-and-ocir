@@ -1,0 +1,48 @@
+name: container # ワークフロー名を決定
+
+# トリガーの設定
+on:
+    pull_request: # プルリクエストが発生したときにトリガー
+        branches:
+            - develop
+            - main
+    push: # プッシュ(マージ)が発生したときにトリガー
+        branches:
+            - develop
+            - main
+
+# ジョブの設定
+jobs:
+    filter-files: # 変更されたファイルを判定するジョブ
+        name: Determine Changed Files
+        runs-on: ubuntu-latest
+        outputs:
+            frontend: ${{ steps.filter.outputs.frontend }} # フロントエンドの変更時のフラグ
+            backend: ${{ steps.filter.outputs.backend }} # バックエンドの変更時のフラグ
+        steps:
+            - name: Checkout repository # リポジトリをチェックアウト
+              uses: actions/checkout@v4
+
+            - name: Determine changed files # 変更されたファイルを判定
+              id: filter
+              uses: dorny/paths-filter@v3
+              with:
+                  filters: |
+                      frontend:
+                        - 'react/**/*.ts'
+                        - 'react/**/*.tsx'
+                      backend:
+                        - 'fastapi/**/*.py'
+
+    build-test:
+        if: github.event_name == 'push'
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Docker build test
+              run: |
+                  cd react
+                  docker build -t test-image .
