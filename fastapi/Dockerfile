@@ -15,4 +15,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 # アプリケーションのコードをコピー
 COPY . .
 
-RUN python main.py
+RUN python api/main.py
