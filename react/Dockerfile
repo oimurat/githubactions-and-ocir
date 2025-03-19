@@ -3,8 +3,8 @@ ENV NODE_ENV=development
 
 WORKDIR /usr/src/app
 
-COPY package.json ./
-COPY package-lock.json ./
+COPY react/package.json ./
+COPY react/package-lock.json ./
 RUN npm install
 
 COPY . .
