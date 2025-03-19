@@ -31,6 +31,7 @@ jobs:
               uses: oracle-actions/login-ocir@v1.3.0
               with:
                 auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
+                passphrase: ${{ env.OCI_CLI_PASSPHRASE }}
 
             - name: Push container image # コンテナイメージを OCIR にプッシュ
               run: docker push nrt.ocir.io/nrcmxxv7sjse/ec_service_test:nodejs-${{ github.sha }}
@@ -50,6 +51,7 @@ jobs:
               uses: oracle-actions/login-ocir@v1.3.0
               with:
                 auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
+                passphrase: ${{ env.OCI_CLI_PASSPHRASE }}
 
             - name: Push container image # コンテナイメージを OCIR にプッシュ
               run: docker push nrt.ocir.io/nrcmxxv7sjse/ec_service_test:python-${{ github.sha }}
