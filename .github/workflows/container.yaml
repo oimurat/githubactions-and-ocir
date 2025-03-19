@@ -44,5 +44,5 @@ jobs:
 
             - name: Docker build test
               run: |
-                  cd react
+                  cd fastapi
                   docker build -t test-image .
