@@ -2,14 +2,17 @@ name: container # ワークフロー名を決定
 
 # トリガーの設定
 on:
-    pull_request: # プルリクエストが発生したときにトリガー
-        branches:
-            - develop
-            - main
     push: # プッシュ(マージ)が発生したときにトリガー
         branches:
             - develop
-            - main
+
+# 環境変数の設定
+env:
+    OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
+    OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
+    OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
+    OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+    OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
 
 # ジョブの設定
 jobs:
@@ -31,18 +34,49 @@ jobs:
                       frontend:
                         - 'react/**/*.ts'
                         - 'react/**/*.tsx'
+                        - 'react/Dockerfile'
                       backend:
                         - 'fastapi/**/*.py'
+                        - 'fastapi/Dockerfile'
 
-    build-test:
-        if: github.event_name == 'push'
+    frontend-build-and-push: # フロントエンドのビルドとプッシュを行うジョブ
+        name: Frontend Build & Push
+        needs: filter-files
+        if: github.event_name == 'push' && needs.filter-files.outputs.frontend == 'true'
         runs-on: ubuntu-latest
 
         steps:
-            - name: Checkout repository
+            - name: Checkout repository # リポジトリをチェックアウト
               uses: actions/checkout@v4
 
-            - name: Docker build test
-              run: |
-                  cd fastapi
-                  docker build -t test-image .
+            - name: Docker build # Docker イメージをビルド
+              run: docker build . --file react/Dockerfile --tag nrt.ocir.io/nrcmxxv7sjse/ec_service_test:nodejs-${{ github.sha }}
+
+            - name: Login OCIR # OCIR にログイン
+              uses: oracle-actions/login-ocir@v1.2.1
+              with:
+                auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
+
+            - name: Push container image # コンテナイメージを OCIR にプッシュ
+              run: docker push nrt.ocir.io/nrcmxxv7sjse/ec_service_test:nodejs-${{ github.sha }}
+
+    backend-build-and-push: # バックエンドのビルドとプッシュを行うジョブ
+        name: Backend Build & Push
+        needs: filter-files
+        if: github.event_name == 'push' && needs.filter-files.outputs.backend == 'true'
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository # リポジトリをチェックアウト
+              uses: actions/checkout@v4
+
+            - name: Docker build # Docker イメージをビルド
+              run: docker build . --file fastapi/Dockerfile --tag nrt.ocir.io/nrcmxxv7sjse/ec_service_test:python-${{ github.sha }}
+
+            - name: Login OCIR # OCIR にログイン
+              uses: oracle-actions/login-ocir@v1.2.1
+              with:
+                auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
+
+            - name: Push container image # コンテナイメージを OCIR にプッシュ
+              run: docker push nrt.ocir.io/nrcmxxv7sjse/ec_service_test:python-${{ github.sha }}
