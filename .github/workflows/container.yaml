@@ -13,7 +13,6 @@ env:
     OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
     OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
     OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
-    OCI_CLI_PASSPHRASE: ${{ secrets.OCI_CLI_PASSPHRASE }}
 
 jobs:
     frontend-build-and-push: # フロントエンドのビルドとプッシュを行うジョブ
@@ -31,7 +30,6 @@ jobs:
               uses: oracle-actions/login-ocir@v1.3.0
               with:
                 auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
-                passphrase: ${{ env.OCI_CLI_PASSPHRASE }}
 
             - name: Push container image # コンテナイメージを OCIR にプッシュ
               run: docker push nrt.ocir.io/nrcmxxv7sjse/ec_service_test:nodejs-${{ github.sha }}
@@ -51,7 +49,6 @@ jobs:
               uses: oracle-actions/login-ocir@v1.3.0
               with:
                 auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
-                passphrase: ${{ env.OCI_CLI_PASSPHRASE }}
 
             - name: Push container image # コンテナイメージを OCIR にプッシュ
               run: docker push nrt.ocir.io/nrcmxxv7sjse/ec_service_test:python-${{ github.sha }}
