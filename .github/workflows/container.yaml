@@ -15,6 +15,7 @@ env:
     OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
     OCI_CLI_PASSPHRASE: ${{ secrets.OCI_CLI_PASSPHRASE }}
 
+jobs:
     frontend-build-and-push: # フロントエンドのビルドとプッシュを行うジョブ
         name: Frontend Build & Push
         runs-on: ubuntu-latest
