@@ -15,4 +15,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 # アプリケーションのコードをコピー
 COPY . .
 
-CMD ["python", "main.py"]
+RUN python main.py
