@@ -20,6 +20,7 @@ jobs:
 
             - name: Update manifest using yq
               run: |
+                  cd dispatch-test
                   IMAGE_TAG="nrt.ocir.io/nrcmxxv7sjse/ec_service_test:nodejs-${{ github.sha }}"
                   yq eval ".deployment.template.frontendImageA = \"${IMAGE_TAG}\"" -i oke-test/values.yaml
 
