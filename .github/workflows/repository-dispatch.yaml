@@ -17,7 +17,7 @@ jobs:
 
             - name: Set Env # 環境変数の設定
               run: |
-                  echo "GITHUB_SHA"${github.sha} >> $GITHUB_ENV
+                  echo "GITHUB_SHA"${{github.sha}} >> $GITHUB_ENV
 
             - name: Repository Dispatch
               uses: peter-evans/repository-dispatch@v3
