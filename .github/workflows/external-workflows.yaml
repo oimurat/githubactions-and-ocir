@@ -1,0 +1,33 @@
+name: Update manifest in external workflows
+
+on:
+    push:
+        branches:
+            - develop
+
+jobs:
+    update-manifest:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout this repo
+              uses: actions/checkout@v4
+
+            - name: Clone manifest repo
+              run: |
+                  git clone https://x-access-token:${{ secrets.REPO_ACCESS_TOKEN }}@github.com/oimurat/dispatch-test.git
+                  cd dispatch-test
+
+            - name: Update manifest using yq
+              run: |
+                  IMAGE_TAG="nrt.ocir.io/nrcmxxv7sjse/ec_service_test:nodejs-${{ github.sha }}"
+                  yq eval ".deployment.template.frontendImageA = \"${IMAGE_TAG}\"" -i oke-test/values.yaml
+
+            - name: Commit & Push
+              run: |
+                  cd dispatch-test
+                  git config user.name "github-actions[bot]"
+                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                  git add -A
+                  git commit -m "external-workflows: update manifest"
+                  git push origin main
