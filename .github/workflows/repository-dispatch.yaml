@@ -19,7 +19,7 @@ jobs:
               run: |
                   echo "GITHUB_SHA"=${{github.sha}} >> $GITHUB_ENV
 
-            - name: Repository Dispatch Manifest
+            - name: Repository Dispatch Manifest # マニュフェストリポジトリへの接続
               uses: peter-evans/repository-dispatch@v3
               with:
                   token: ${{ secrets.REPO_ACCESS_TOKEN }}
@@ -27,7 +27,7 @@ jobs:
                   event-type: update-manifest
                   client-payload: '{"sha": "${{ env.GITHUB_SHA }}"}'
 
-            - name: Repository Dispatch Frontend
+            - name: Repository Dispatch Frontend # アプリリポジトリへの接続
               uses: peter-evans/repository-dispatch@v3
               with:
                   token: ${{ secrets.REPO_ACCESS_TOKEN }}
