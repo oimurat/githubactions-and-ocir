@@ -1,0 +1,28 @@
+name: repository-dispatch # ワークフロー名を決定
+
+# トリガーの設定
+on:
+    push: # プッシュ(マージ)が発生したときにトリガー
+        branches:
+            - develop
+
+jobs:
+    dispatch:
+        name: Repository Dispatch # 他リポジトリへの接続を行うジョブ
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository # リポジトリをチェックアウト
+              uses: actions/checkout@v4
+
+            - name: Set Env # 環境変数の設定
+              run: |
+                  echo "GITHUB_SHA"${github.sha} >> $GITHUB_ENV
+
+            - name: Repository Dispatch
+              uses: peter-evans/repository-dispatch@v3
+              with:
+                  token: ${{ secrets.REPO_ACCESS_TOKEN }}
+                  repository: oimurat/dispatch-test # リポジトリ名を指定
+                  event-type: update-manifest
+                  client-payload: '{"sha": "${{ env.GITHUB_SHA }}"}'
