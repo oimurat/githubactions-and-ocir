@@ -19,10 +19,17 @@ jobs:
               run: |
                   echo "GITHUB_SHA"=${{github.sha}} >> $GITHUB_ENV
 
-            - name: Repository Dispatch
+            - name: Repository Dispatch Manifest
               uses: peter-evans/repository-dispatch@v3
               with:
                   token: ${{ secrets.REPO_ACCESS_TOKEN }}
                   repository: oimurat/dispatch-test # リポジトリ名を指定
                   event-type: update-manifest
                   client-payload: '{"sha": "${{ env.GITHUB_SHA }}"}'
+
+            - name: Repository Dispatch Frontend
+              uses: peter-evans/repository-dispatch@v3
+              with:
+                  token: ${{ secrets.REPO_ACCESS_TOKEN }}
+                  repository: oimurat/lint-and-test-code # リポジトリ名を指定
+                  event-type: frontend-lint
