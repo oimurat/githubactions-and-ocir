@@ -63,7 +63,7 @@ jobs:
             - name: Run Prettier check # Prettierでコードフォーマットをチェック
               run: |
                   cd lint-and-test-code/react
-                  npm run prettier -- -- check .
+                  npm run prettier -- --check .
 
             - name: Run ESLint #ESLintで静的解析を実施
               run: |
