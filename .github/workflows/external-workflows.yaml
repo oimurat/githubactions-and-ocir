@@ -32,3 +32,40 @@ jobs:
                   git add -A
                   git commit -m "external-workflows: update manifest"
                   git push origin main
+
+    frontend-lint:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Clone app repo
+              run: |
+                  git clone https://x-access-token:${{ secrets.REPO_ACCESS_TOKEN }}@github.com/oimurat/lint-and-test-code.git
+                  cd lint-and-test-code
+
+            - name: Set up Node.js # Node.jsのセットアップ
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache-dependency-path: react/package-lock.json
+
+            - name: clear npm cache # npmキャッシュのクリア
+              run: |
+                  cd lint-and-test-code/react
+                  npm cache clean --force
+
+            - name: Install dependencies # 依存関係のインストール
+              run: |
+                  cd lint-and-test-code/react
+                  npm install
+
+            - name: Run Prettier check # Prettierでコードフォーマットをチェック
+              run: |
+                  cd lint-and-test-code/react
+                  npm run prettier -- -- check .
+
+            - name: Run ESLint #ESLintで静的解析を実施
+              run: |
+                  cd lint-and-test-code/react
+                  npm run lint -- .
